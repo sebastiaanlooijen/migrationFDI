@@ -160,3 +160,6 @@ df_1 = df_1.reindex(
         )
 
 df_2 = pd.merge(df_1, FDI, on='key', how='left')
+
+# write file
+df_2.to_csv("~/Documents/migrationFDI/core.csv")
