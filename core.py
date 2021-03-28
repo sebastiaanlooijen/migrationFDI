@@ -5,7 +5,7 @@
 import pandas as pd
 
 # key: country names
-countries_en = pd.read_csv("./Sources/Countries/countries_en.csv")
+countries_en = pd.read_csv("./sources/countries/countries_en.csv")
 countries_en.rename(
         columns={
             'name': 'country_name_en',
@@ -14,7 +14,7 @@ countries_en.rename(
         inplace=True
         )
 
-countries_nl = pd.read_csv("./Sources/Countries/countries_nl.csv")
+countries_nl = pd.read_csv("./sources/countries/countries_nl.csv")
 countries_nl.rename(columns={'name': 'country_name_nl'}, inplace=True)
 countries_nl = countries_nl.drop(['alpha2', 'alpha3'], axis=1)
 countries = pd.merge(countries_nl, countries_en, on="id", how="left")
@@ -32,7 +32,7 @@ countries['country_name_nl'] = countries['country_name_nl'].replace(
 countries = countries.drop(['country_id'], axis=1)
 
 # dependent variable: immigrants
-immigrants = pd.read_csv("./Sources/Migration/migrants_nl.csv", sep=";")
+immigrants = pd.read_csv("./sources/migration/migrants_nl.csv", sep=";")
 immigrants = immigrants.drop(['ID', 'Geslacht', 'Geboorteland'], axis=1)
 immigrants['Perioden'] = immigrants['Perioden'].str[:4]
 immigrants.rename(
@@ -81,7 +81,7 @@ immigrants['country_name_nl'] = immigrants['country_name_nl'].replace(
         )
 
 # independent variable: FDI
-FDI = pd.read_csv("./Sources/FDI/FDI_FLOW_PARTNER.csv")
+FDI = pd.read_csv("./sources/FDI/FDI_FLOW_PARTNER.csv")
 FDI.query("FLOW == 'OUT' and CUR == 'USD' and COU == 'NLD'", inplace=True)
 FDI = FDI[['PC', 'Partner country', 'Year', 'Value']]
 FDI.rename(
