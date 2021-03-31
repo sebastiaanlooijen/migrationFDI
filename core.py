@@ -1,16 +1,17 @@
 # This scripts cleans and merges files in ./Sources
 # Sebastiaan Looijen, february 2021
 
-# import libraries
+# import libraries --------------------------------------------------------
 import pandas as pd
 
-# key: country names
+# key: country names ------------------------------------------------------
 countries_en = pd.read_csv("./sources/countries/countries_en.csv")
 countries_en.rename(
         columns={
             'name': 'country_name_en',
             'alpha2': 'country_alpha2',
-            'alpha3': 'country_alpha3'},
+            'alpha3': 'country_alpha3'
+            },
         inplace=True
         )
 
@@ -31,7 +32,7 @@ countries['country_name_nl'] = countries['country_name_nl'].replace(
         )
 countries = countries.drop(['country_id'], axis=1)
 
-# dependent variable: immigrants
+# dependent variable: immigrants ------------------------------------------
 immigrants = pd.read_csv("./sources/migration/migrants_nl.csv", sep=";")
 immigrants = immigrants.drop(['ID', 'Geslacht', 'Geboorteland'], axis=1)
 immigrants['Perioden'] = immigrants['Perioden'].str[:4]
@@ -39,11 +40,12 @@ immigrants.rename(
         columns={
             'LandVanHerkomstVestiging': 'Key',
             'Perioden': 'year',
-            'Immigratie_1': 'immigrants'},
+            'Immigratie_1': 'immigrants'
+            },
         inplace=True
         )
 
-metadata = pd.read_csv("./Sources/Migration/metadata.csv", sep="\t")
+metadata = pd.read_csv("./sources/migration/metadata.csv", sep="\t")
 immigrants = pd.merge(immigrants, metadata, on="Key", how="left")
 
 immigrants = immigrants.drop(['Key'], axis=1)
@@ -52,8 +54,9 @@ immigrants = immigrants.reindex(
         columns=[
             'country_name_nl',
             'year',
-            'immigrants']
-            )
+            'immigrants'
+            ]
+        )
 
 immigrants['country_name_nl'] = immigrants['country_name_nl'].replace(
         [
@@ -80,7 +83,7 @@ immigrants['country_name_nl'] = immigrants['country_name_nl'].replace(
         ]
         )
 
-# independent variable: FDI
+# independent variable: FDI -----------------------------------------------
 FDI = pd.read_csv("./sources/FDI/FDI_FLOW_PARTNER.csv")
 FDI.query("FLOW == 'OUT' and CUR == 'USD' and COU == 'NLD'", inplace=True)
 FDI = FDI[['PC', 'Partner country', 'Year', 'Value']]
@@ -89,7 +92,8 @@ FDI.rename(
             'PC': 'country_alpha3',
             'Partner country': 'country_name_en',
             'Year': 'year',
-            'Value': 'FDI'},
+            'Value': 'FDI'
+            },
         inplace=True
         )
 FDI['country_name_en'] = FDI['country_name_en'].replace(
@@ -141,12 +145,13 @@ FDI['country_name_en'] = FDI['country_name_en'].replace(
         ]
         )
 
-FDI['key'] = FDI['country_name_en'] + FDI['year'].astype(str)
-FDI = FDI[['key', 'FDI']]
+FDI['key_name_en'] = FDI['country_name_en'] + FDI['year'].astype(str)
+FDI = FDI[['key_name_en', 'FDI']]
 
-# create initial data set
+# create initial data set -------------------------------------------------
 df_1 = pd.merge(immigrants, countries, on="country_name_nl", how="inner")
-df_1['key'] = df_1['country_name_en'] + df_1['year']
+df_1['key_name_en'] = df_1['country_name_en'] + df_1['year']
+df_1['key_alpha3'] = df_1['country_alpha3'] + df_1['year']
 df_1 = df_1.reindex(
         columns=[
             'country_name_en',
@@ -154,12 +159,14 @@ df_1 = df_1.reindex(
             'country_alpha2',
             'country_alpha3',
             'year',
-            'key',
+            'key_name_en',
+            'key_alpha3',
             'immigrants'
             ]
         )
 
-df_2 = pd.merge(df_1, FDI, on='key', how='left')
+df_2 = pd.merge(df_1, FDI, on='key_name_en', how='left')
 
-# write file
+# write file --------------------------------------------------------------
 df_2.to_csv("~/Documents/migrationFDI/core.csv")
+
