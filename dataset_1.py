@@ -8,54 +8,81 @@ import pandas as pd
 core = pd.read_csv("./core.csv")
 
 # controle variable: population growth ------------------------------------
-popgrowth = pd.read_csv("./sources/pop_growth/POPGROW.csv", skiprows=4)
-popgrowth.rename(
+pop_growth = pd.read_csv("./sources/pop_growth/POPGROW.csv", skiprows=4)
+pop_growth.rename(
         columns={
             'Country Name': 'country_name_en',
             'Country Code': 'country_alpha3'
             }, 
         inplace=True
         )
-popgrowth = popgrowth.drop(['Indicator Name', 'Indicator Code'], axis=1)
-popgrowth = pd.melt(
-        popgrowth,
+pop_growth = pop_growth.drop(['Indicator Name', 'Indicator Code'], axis=1)
+pop_growth = pd.melt(
+        pop_growth,
         id_vars=["country_name_en", "country_alpha3"],
         var_name="year",
         value_name="population_growth"
         )
-popgrowth['key_alpha3'] = (
-        popgrowth['country_alpha3'].str.lower() 
-        + popgrowth['year'].astype(str)
+pop_growth['key_alpha3'] = (
+        pop_growth['country_alpha3'].str.lower() 
+        + pop_growth['year'].astype(str)
         )
-popgrowth = popgrowth[['key_alpha3', 'population_growth']]
+pop_growth = pop_growth[['key_alpha3', 'population_growth']]
 
 # controle variable: GDP per capita ---------------------------------------
-GDPcapita = pd.read_csv(
+GDP_capita = pd.read_csv(
         "./sources/GDP_per_capita/GDP_per_capita.csv", 
         skiprows=4
         )
-GDPcapita.rename(
+GDP_capita.rename(
         columns={
             'Country Name': 'country_name_en',
             'Country Code': 'country_alpha3'
             }, 
         inplace=True
         )
-GDPcapita = GDPcapita.drop(
+GDP_capita = GDP_capita.drop(
         ['Indicator Name', 'Indicator Code', '2020', 'Unnamed: 65'],
         axis=1
         )
-GDPcapita= pd.melt(
-        GDPcapita,
+GDP_capita= pd.melt(
+        GDP_capita,
         id_vars=["country_name_en", "country_alpha3"],
         var_name="year",
         value_name="GDP_per_capita"
         )
-GDPcapita['key_alpha3'] = (
-        GDPcapita['country_alpha3'].str.lower() 
-        + GDPcapita['year'].astype(str)
+GDP_capita['key_alpha3'] = (
+        GDP_capita['country_alpha3'].str.lower() 
+        + GDP_capita['year'].astype(str)
         )
-GDPcapita = GDPcapita[['key_alpha3', 'GDP_per_capita']]
+GDP_capita = GDP_capita[['key_alpha3', 'GDP_per_capita']]
 
-#TODO: controle variable: GDP growth
-#TODO: merge all
+# controle variable: GDP growth -------------------------------------------
+GDP_growth = pd.read_csv("./sources/GDP_growth/GDP_growth.csv", skiprows=4)
+GDP_growth.rename(
+        columns={
+            'Country Name': 'country_name_en',
+            'Country Code': 'country_alpha3'
+            }, 
+        inplace=True
+        )
+GDP_growth = GDP_growth.drop(
+        ['Indicator Name', 'Indicator Code', '2020', 'Unnamed: 65'],
+        axis=1
+        )
+GDP_growth = pd.melt(
+        GDP_growth,
+        id_vars=["country_name_en", "country_alpha3"],
+        var_name="year",
+        value_name="GDP_growth"
+        )
+GDP_growth['key_alpha3'] = (
+        GDP_growth['country_alpha3'].str.lower() 
+        + GDP_growth['year'].astype(str)
+        )
+GDP_growth = GDP_growth[['key_alpha3', 'GDP_growth']]
+       
+# merge datasets ----------------------------------------------------------
+dataset_1 = pd.merge(popgrowth, GDPcapita, on="key_alpha3", how="left")
+dataset_1 = pd.merge(dataset_1, GDPgrowth, on="key_alpha3", how="left")
+dataset_1 = pd.merge(core, dataset_1, on="key_alpha3", how="left")
