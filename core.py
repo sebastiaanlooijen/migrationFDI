@@ -1,4 +1,4 @@
-# This scripts cleans and merges files in ./Sources
+# This scripts cleans and merges the relevant files in ./sources
 # Sebastiaan Looijen, february 2021
 
 # import libraries --------------------------------------------------------
@@ -148,11 +148,11 @@ FDI['country_name_en'] = FDI['country_name_en'].replace(
 FDI['key_name_en'] = FDI['country_name_en'] + FDI['year'].astype(str)
 FDI = FDI[['key_name_en', 'FDI']]
 
-# create initial data set -------------------------------------------------
-df_1 = pd.merge(immigrants, countries, on="country_name_nl", how="inner")
-df_1['key_name_en'] = df_1['country_name_en'] + df_1['year']
-df_1['key_alpha3'] = df_1['country_alpha3'] + df_1['year']
-df_1 = df_1.reindex(
+# create initial dataset --------------------------------------------------
+core = pd.merge(immigrants, countries, on="country_name_nl", how="inner")
+core['key_name_en'] = core['country_name_en'] + core['year']
+core['key_alpha3'] = core['country_alpha3'] + core['year']
+core = core.reindex(
         columns=[
             'country_name_en',
             'country_name_nl',
@@ -165,8 +165,7 @@ df_1 = df_1.reindex(
             ]
         )
 
-df_2 = pd.merge(df_1, FDI, on='key_name_en', how='left')
+core = pd.merge(core, FDI, on='key_name_en', how='left')
 
 # write file --------------------------------------------------------------
-df_2.to_csv("~/Documents/migrationFDI/core.csv")
-
+core.to_csv("~/Documents/migrationFDI/core.csv", index=False)

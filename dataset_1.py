@@ -1,4 +1,4 @@
-# This scripts cleans and merges all the files in ./sources 
+# This scripts cleans and merges the relevant files in ./sources 
 # Sebastiaan Looijen, april 2021 
 
 # import libraries --------------------------------------------------------
@@ -83,6 +83,9 @@ GDP_growth['key_alpha3'] = (
 GDP_growth = GDP_growth[['key_alpha3', 'GDP_growth']]
        
 # merge datasets ----------------------------------------------------------
-dataset_1 = pd.merge(popgrowth, GDPcapita, on="key_alpha3", how="left")
-dataset_1 = pd.merge(dataset_1, GDPgrowth, on="key_alpha3", how="left")
-dataset_1 = pd.merge(core, dataset_1, on="key_alpha3", how="left")
+dataset_1 = pd.merge(core, pop_growth, on="key_alpha3", how="left")
+dataset_1 = pd.merge(dataset_1, GDP_capita, on="key_alpha3", how="left")
+dataset_1 = pd.merge(dataset_1, GDP_growth, on="key_alpha3", how="left")
+
+# write files -------------------------------------------------------------
+dataset_1.to_csv("~/Documents/migrationFDI/dataset_1.csv", index=False)
