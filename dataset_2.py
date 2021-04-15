@@ -32,6 +32,15 @@ GDP_stock['key_alpha3'] = (
         )
 GDP_stock = GDP_stock[['key_alpha3', 'GDP_stock']]
 
-# controle variable: distance ---------------------------------------------
+# controle variable: distance, language, border ---------------------------
 geodist = pd.read_csv("./sources/geodist/geodist.csv")
 geodist.query("iso_o == 'NLD'", inplace=True)
+geodist.rename(columns = {'iso_d': 'country_alpha3'}, inplace=True)
+geodist['country_alpha3'] = geodist['country_alpha3'].str.lower()
+geodist = geodist[['country_alpha3', 'contig', 'comlang_off', 'dist']]
+
+# TODO: controle variable: log of bilateral telephone traffic
+# TODO: controle variable: common exchange rate peg
+# TODO: controle variable: dual taxation treaty
+# TODO: controle variable: trade agreement
+# TODO: controle variable: lagged correlation of the two countries growth rates

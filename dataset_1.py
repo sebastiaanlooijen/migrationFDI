@@ -77,7 +77,7 @@ GDP_growth = pd.melt(
         value_name="GDP_growth"
         )
 GDP_growth['key_alpha3'] = (
-        GDP_growth['country_alpha3'].str.lower() 
+        GDP_growth['country_alpha3'].str.lower()
         + GDP_growth['year'].astype(str)
         )
 GDP_growth = GDP_growth[['key_alpha3', 'GDP_growth']]
