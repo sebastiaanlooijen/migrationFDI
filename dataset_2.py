@@ -27,7 +27,11 @@ GDP_stock= pd.melt(
         value_name="GDP_stock"
         )
 GDP_stock['key_alpha3'] = (
-        GDP_stock['country_alpha3'].str.lower() 
+        GDP_stock['country_alpha3'].str.lower()
         + GDP_stock['year'].astype(str)
         )
 GDP_stock = GDP_stock[['key_alpha3', 'GDP_stock']]
+
+# controle variable: distance ---------------------------------------------
+geodist = pd.read_csv("./sources/geodist/geodist.csv")
+geodist.query("iso_o == 'NLD'", inplace=True)
